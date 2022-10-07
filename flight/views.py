@@ -403,9 +403,9 @@ def get_ticket(request):
         'ticket1':ticket1,
         'current_year': datetime.now().year
     }
-    #pdf = render_to_pdf('flight/ticket.html', data)
-    #return HttpResponse(pdf, content_type='application/pdf')
-    return render(data, "flight/ticket.html")
+    #return render(data, "flight/ticket.html")
+    pdf = render_to_pdf('flight/ticket.html', data)
+    return HttpResponse(pdf, content_type='application/pdf')
     
 
 def bookings(request):
