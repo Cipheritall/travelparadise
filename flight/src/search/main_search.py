@@ -1,17 +1,17 @@
 from django.shortcuts import render, HttpResponse, HttpResponseRedirect
-from django.urls import reverse
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate, login, logout
+#from django.urls import reverse
+#from django.http import JsonResponse
+#from django.views.decorators.csrf import csrf_exempt
+#from django.contrib.auth import authenticate, login, logout
 
 from datetime import datetime
 import math
 from ...models import *
-from capstone.utils import render_to_pdf, createticket
+#from capstone.utils import render_to_pdf, createticket
 
 #Fee and Surcharge variable
 FEE = 100.0
-from flight.utils import createWeekDays, addPlaces, addDomesticFlights, addInternationalFlights
+#from flight.utils import createWeekDays, addPlaces, addDomesticFlights, addInternationalFlights
 
 
 def request_flight(request):
