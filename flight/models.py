@@ -5,9 +5,9 @@ from datetime import datetime
 
 # Create your models here.
 
-class User(AbstractUser):
-    def __str__(self):
-        return f"{self.id}: {self.first_name} {self.last_name}"
+#class User(AbstractUser):
+#    def __str__(self):
+#        return f"{self.id}: {self.first_name} {self.last_name}"
 
 class Place(models.Model):
     city = models.CharField(max_length=64)
