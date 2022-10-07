@@ -1,6 +1,4 @@
-![icon_logo](https://user-images.githubusercontent.com/56977388/178157849-38d2f2c3-1c93-4dac-9577-57f3a752e2cd.png)
-
-
+![icon_logo](https://raw.githubusercontent.com/streetU/travelparadise/main/flight/static/img/icon_logo.png)
 
 A flight booking Django application written in Python, HTML, CSS & Javascript.
 This is the capstone project for CS50's Web Programming with Python and Javascript.
@@ -8,8 +6,6 @@ This is the capstone project for CS50's Web Programming with Python and Javascri
 #### Project Video: [Watch on Youtube](https://www.youtube.com/watch?v=3tD4OsuGmoo)
 
 #### Deployment: [Try it (Deployed)](https://flight-web-app.herokuapp.com/)
-
-<img alt="flight" src="https://raw.githubusercontent.com/streetU/travelparadise/main/flight/static/img/icon_logo.png">
 
 
 ### Features
