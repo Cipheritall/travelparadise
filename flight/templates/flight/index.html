@@ -58,6 +58,20 @@
                             </div>
                         </div>
                         <div class="input-row">
+                            <label for="countadults">Adults: </label>
+                            <select name="countadults" id="SeatType" class="form-control mr-sm-2 selectpicker">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="3">10</option>
+                            </select>
+                        </div>
+                        <div class="input-row">
                             <label for="depart_date">Departure Date: </label>
                             <input type="date" name="DepartDate" min="{{min_date}}" max="{{max_date}}" id="depart_date" placeholder="Date" class="form-control mr-sm-2" value="{{depart_date}}">
                         </div>
@@ -71,6 +85,13 @@
                                 <option value="economy" {% if seat == 'economy' %}selected{% endif %}>Economy</option>
                                 <option value="business" {% if seat == 'business' %}selected{% endif %}>Business</option>
                                 <option value="first" {% if seat == 'first' %}selected{% endif %}>First</option>
+                            </select>
+                        </div>
+                        <div class="input-row">
+                            <label for="test">IS_TEST: </label>
+                            <select name="test" id="SeatType" class="form-control mr-sm-2 selectpicker">
+                                <option value="1">1</option>
+                                <option value="2">0</option>
                             </select>
                         </div>
                         <div class="input-row">

@@ -9,7 +9,7 @@ import math
 from .models import *
 from capstone.utils import render_to_pdf, createticket
 
-from flight.src.search.main_search import request_flight
+from flight.src.search.main_search import request_flight,request_flight_2
 from flight.src.book.main_book import main_book
 
 
@@ -133,6 +133,8 @@ def query(request, q):
 
 @csrf_exempt
 def flight(request):
+    if request.GET.get('test')=='1':
+        request_flight_2(request)
     return request_flight(request)
 
 def review(request):

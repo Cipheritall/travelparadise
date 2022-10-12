@@ -1,3 +1,6 @@
+import amadeus
+import json
+from flight.src.amaclient.client import amaclient
 from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 #from django.urls import reverse
 #from django.http import JsonResponse
@@ -7,12 +10,44 @@ from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 from datetime import datetime
 import math
 from ...models import *
+
 #from capstone.utils import render_to_pdf, createticket
 
 #Fee and Surcharge variable
 FEE = 100.0
 #from flight.utils import createWeekDays, addPlaces, addDomesticFlights, addInternationalFlights
 
+
+
+def request_flight_2(request):
+    o_place = request.GET.get('Origin')
+    d_place = request.GET.get('Destination')
+    trip_type = request.GET.get('TripType')
+    departdate = request.GET.get('DepartDate')
+    adults = request.GET.get('countadults')
+    depart_date = datetime.strptime(departdate, "%Y-%m-%d")
+    return_date = None
+    if trip_type == '2':
+        returndate = request.GET.get('ReturnDate')
+        return_date = datetime.strptime(returndate, "%Y-%m-%d")
+        origin2 = Place.objects.get(code=d_place.upper())   ##
+        destination2 = Place.objects.get(code=o_place.upper())  ##
+    seat = request.GET.get('SeatClass')
+
+    # flightday = Week.objects.get(number=depart_date.weekday())
+    # destination = Place.objects.get(code=d_place.upper())
+    # origin = Place.objects.get(code=o_place.upper())
+        
+    try:
+        flight_offers_search_response = amaclient.shopping.flight_offers_search.get(
+            originLocationCode=o_place,
+            destinationLocationCode=d_place,
+            departureDate=departdate,
+            adults=adults)
+        json_flight_offers_search = json.loads(flight_offers_search_response.body)
+        print(json_flight_offers_search)
+    except amadeus.ResponseError as error:
+        print(error)
 
 def request_flight(request):
     o_place = request.GET.get('Origin')
