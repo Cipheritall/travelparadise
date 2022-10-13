@@ -27,18 +27,38 @@ class Week(models.Model):
         return f"{self.name} ({self.number})"
 
 
+class Segment(models.Model):
+    link =  models.CharField(max_length=255,default=None)
+    departure = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="seg_departures")
+    departure_date = models.DateField(auto_now=False, auto_now_add=False,default=None)
+    departure_time = models.TimeField(auto_now=False, auto_now_add=False,default=None)
+    arrival =  models.ForeignKey(Place, on_delete=models.CASCADE, related_name="seg_arrivals")
+    arrival_date =  models.DateField(auto_now=False, auto_now_add=False,default=None)
+    arrival_time = models.TimeField(auto_now=False, auto_now_add=False,default=None)
+    mk_carrier_code = models.CharField(max_length=64,default=None)
+    op_carrier_code =models.CharField(max_length=64,default=None)
+    numberOfStops =models.CharField(max_length=64,default=None)
+    duration = models.CharField(max_length=64,default=None)
+    aircraft = models.CharField(max_length=64,default=None)
+    
+    def __str__(self):
+        return f"{self.id}: {self.departure} to {self.arrival}"
+    
 class Flight(models.Model):
-    origin = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="departures")
-    destination = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="arrivals")
-    depart_time = models.TimeField(auto_now=False, auto_now_add=False)
-    depart_day = models.ManyToManyField(Week, related_name="flights_of_the_day")
-    duration = models.DurationField(null=True)
-    arrival_time = models.TimeField(auto_now=False, auto_now_add=False)
-    plane = models.CharField(max_length=24)
-    airline = models.CharField(max_length=64)
-    economy_fare = models.FloatField(null=True)
-    business_fare = models.FloatField(null=True)
-    first_fare = models.FloatField(null=True)
+    link = models.CharField(max_length=255,default=None)
+    origin = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="departures",default=None)
+    destination = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="arrivals",default=None)
+    depart_time = models.TimeField(auto_now=False, auto_now_add=False,default=None)
+    depart_day = models.ManyToManyField(Week, related_name="flights_of_the_day",default=None)
+    duration = models.DurationField(null=True,default=None)
+    arrival_time = models.TimeField(auto_now=False, auto_now_add=False,default=None)
+    plane = models.CharField(max_length=24,default=None)
+    airline = models.CharField(max_length=64,default=None)
+    economy_fare = models.FloatField(null=True,default=None)
+    business_fare = models.FloatField(null=True,default=None)
+    first_fare = models.FloatField(null=True,default=None)
+    fare_type = models.CharField(max_length=64,default=None)
+    segments = models.ManyToManyField(Segment,default=None)
 
     def __str__(self):
         return f"{self.id}: {self.origin} to {self.destination}"

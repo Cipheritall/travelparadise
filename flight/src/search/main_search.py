@@ -48,6 +48,44 @@ def request_flight_2(request):
         print(json_flight_offers_search)
     except amadeus.ResponseError as error:
         print(error)
+    #link = json_flight_offers_search['links']['self']
+    flights = []
+    #if len(Segment.objec)
+    for raw_flight in json_flight_offers_search['data']:
+        loc_segments = []
+        for seg in raw_flight['itineraries'][0]['segments']:
+            operating_cxr = ""
+            raw_arr =  str(seg['arrival']['at'])
+            raw_dep =  str(seg['departure']['at'])
+            try:
+                operating_cxr = seg['operating']['carrierCode']
+            except:
+                pass
+            
+            segment = Segment(
+                departure = Place.objects.get(code=seg['departure']['iataCode']),
+                arrival = Place.objects.get(code=seg['arrival']['iataCode']),
+                arrival_date =raw_arr[:raw_arr.find('T')],
+                departure_date =raw_dep[:raw_dep.find('T')],
+                departure_time = raw_dep[raw_dep.find('T')+1:],
+                arrival_time = raw_arr[raw_arr.find('T')+1:],
+                mk_carrier_code = seg['carrierCode'],
+                op_carrier_code = operating_cxr,
+                numberOfStops = seg['numberOfStops'],
+                duration = seg['duration'],
+                #aircraft = raw_flight['dictionaries']['aircraft'][seg['aircraft']]
+                aircraft = seg['aircraft']
+                
+            )
+            loc_segments.append(segment)
+            Segment.objects.bulk_create(loc_segments)
+        flight = Flight(
+            origin = getattr(loc_segments[0], 'departure'),
+            destination = getattr(loc_segments[0], 'arrival')
+        )
+        for ss in loc_segments:
+            flight.segments.add(ss)
+    
 
 def request_flight(request):
     o_place = request.GET.get('Origin')
