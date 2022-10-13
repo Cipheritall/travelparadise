@@ -183,9 +183,30 @@ def review(request):
         })
     else:
         return HttpResponseRedirect(reverse("login"))
-def book(reauest):
-    return main_book(reauest)
 
+def book(request):
+    return main_book(request)
+
+def populate_airoprts_db(request):
+    import pandas as pd
+    Place.objects.all().delete()
+    tmp_data=pd.read_csv('data/EU_AIRPORTS.csv')
+    places = []
+    for row in range(len(tmp_data)):
+        if len(str(tmp_data.iloc[row]['municipality']))>3:
+            places.append(
+                Place(
+                    city = tmp_data.iloc[row]['municipality'], 
+                    airport = tmp_data.iloc[row]['name'],
+                    code = tmp_data.iloc[row]['iata_code'],
+                    country = tmp_data.iloc[row]['iso_country']
+                )
+            )
+        else:
+            print(tmp_data.iloc[row]['name'])
+    Place.objects.bulk_create(places)
+    print("ok")
+    return HttpResponse("Pop")
 
 def payment(request):
     if request.user.is_authenticated:
