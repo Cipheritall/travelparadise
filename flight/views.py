@@ -190,7 +190,7 @@ def book(request):
 def populate_airoprts_db(request):
     import pandas as pd
     Place.objects.all().delete()
-    tmp_data=pd.read_csv('data/EU_AIRPORTS.csv')
+    tmp_data=pd.read_csv('data/airports_all.csv')
     places = []
     for row in range(len(tmp_data)):
         if len(str(tmp_data.iloc[row]['municipality']))>3:

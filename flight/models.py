@@ -29,6 +29,7 @@ class Week(models.Model):
 
 class Segment(models.Model):
     link =  models.CharField(max_length=255,default=None)
+    id = models.IntegerField(primary_key=True)
     departure = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="seg_departures")
     departure_date = models.DateField(auto_now=False, auto_now_add=False,default=None)
     departure_time = models.TimeField(auto_now=False, auto_now_add=False,default=None)
@@ -45,19 +46,21 @@ class Segment(models.Model):
         return f"{self.id}: {self.departure} to {self.arrival}"
     
 class Flight(models.Model):
+    #id = models.IntegerField(primary_key=True)
     link = models.CharField(max_length=255,default=None)
     origin = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="departures",default=None)
     destination = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="arrivals",default=None)
-    depart_time = models.TimeField(auto_now=False, auto_now_add=False,default=None)
-    depart_day = models.ManyToManyField(Week, related_name="flights_of_the_day",default=None)
-    duration = models.DurationField(null=True,default=None)
-    arrival_time = models.TimeField(auto_now=False, auto_now_add=False,default=None)
-    plane = models.CharField(max_length=24,default=None)
-    airline = models.CharField(max_length=64,default=None)
-    economy_fare = models.FloatField(null=True,default=None)
-    business_fare = models.FloatField(null=True,default=None)
-    first_fare = models.FloatField(null=True,default=None)
-    fare_type = models.CharField(max_length=64,default=None)
+    depart_time = models.TimeField(auto_now=False, auto_now_add=False,default=None,null=True)
+    departure_date = models.DateField(auto_now=False, auto_now_add=False,default=None)
+    duration = models.DurationField(default=None,null=True)
+    arrival_date =  models.DateField(auto_now=False, auto_now_add=False,default=None)
+    arrival_time = models.TimeField(auto_now=False, auto_now_add=False,default=None,null=True)
+    plane = models.CharField(max_length=24,default=None,null=True)
+    airline = models.CharField(max_length=64,default=None,null=True)
+    price_grand_total = models.FloatField(null=True,default=None)
+    price_base = models.FloatField(null=True,default=None)
+    price_currency = models.CharField(max_length=64,default=None,null=True)
+    fare_type = models.CharField(max_length=64,default=None,null=True)
     segments = models.ManyToManyField(Segment,default=None)
 
     def __str__(self):
