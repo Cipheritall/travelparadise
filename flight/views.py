@@ -129,13 +129,11 @@ def query(request, q):
     for place in places:
         if (q in place.city.lower()) or (q in place.airport.lower()) or (q in place.code.lower()) or (q in place.country.lower()):
             filters.append(place)
-    return JsonResponse([{'code':place.code, 'city':place.city, 'country': place.country} for place in filters], safe=False)
+    return JsonResponse([{'code':place.code, 'city':place.city, 'airport':place.airport, 'country': place.country} for place in filters], safe=False)
 
 @csrf_exempt
 def flight(request):
-    # if request.GET.get('test')=='1':
-    #     request_flight_2(request)
-    return request_flight_2(request)
+    return request_flight(request)
 
 def review(request):
     flight_1 = request.GET.get('flight1Id')
