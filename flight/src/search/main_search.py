@@ -153,7 +153,7 @@ def request_flight(request):
     flights = get_flights(o_place,d_place,departdate,adults,1)
     
     if trip_type == '2':
-        return render(request, "flight/search.html", {
+        return render(request, "flight/search2.html", {
             'flights': Flight.objects.filter(link=link_1),
             'origin': origin,
             'destination': destination,
@@ -169,7 +169,7 @@ def request_flight(request):
             # 'max_price2':Flight.objects.filter(link=link+"_2").order_by('-price_grand_total').first().price_grand_total,    
             # 'min_price2': Flight.objects.filter(link=link+"_2").order_by('price_grand_total').first().price_grand_total    ##
         })
-        return render(request, "flight/search.html", {
+        return render(request, "flight/search2.html", {
             'flights': flights,
             'origin': origin,
             'destination': destination,
