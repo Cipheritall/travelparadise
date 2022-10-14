@@ -407,70 +407,35 @@
                         <div class="row base-fare">
                             <div class="base-fae-label">Base Fare: </div>
                             <div class="base-fare-value">
-                                {% if seat == 'First' %}
-                                    € <span>
-                                        {% if flight2 %}
-                                            {{flight1.first_fare | add:flight2.first_fare}}
-                                        {% else %}
-                                            {{flight1.first_fare}}
-                                        {% endif %}
-                                        </span>
+                                    {{flight1.price_currency}}
+                                    {% if flight2 %}
+                                        {{flight1.price_grand_total | add:flight2.price_grand_total}}
+                                    {% else %}
+                                        {{flight1.price_grand_total}}
+                                    {% endif %}
+                                        
+                                    <span></span>
                                     <input type="hidden" id="basefare" value="{% if flight2 %}{{flight1.first_fare | add:flight2.first_fare}}{% else %}{{flight1.first_fare}}{% endif %}">
-                                {% elif seat == 'Business' %}
-                                    € <span>
-                                        {% if flight2 %}
-                                            {{flight1.business_fare | add:flight2.business_fare}}
-                                        {% else %}
-                                            {{flight1.business_fare}}
-                                        {% endif %}
-                                        </span>
-                                    <input type="hidden" id="basefare" value="{% if flight2 %}{{flight1.business_fare | add:flight2.business_fare}}{% else %}{{flight1.business_fare}}{% endif %}">
-                                {% elif seat == 'Economy' %}
-                                    € <span>
-                                        {% if flight2 %}
-                                            {{flight1.economy_fare | add:flight2.economy_fare}}
-                                        {% else %}
-                                            {{flight1.economy_fare}}
-                                        {% endif %}
-                                    </span>
-                                    <input type="hidden" id="basefare" value="{% if flight2 %}{{flight1.economy_fare | add:flight2.economy_fare}}{% else %}{{flight1.economy_fare}}{% endif %}">
-                                {% endif %}
+                                
                             </div>
                         </div>
                         <div class="row surcharges">
                             <div class="surcharges-label">Fee & Surcharges: </div>
-                            <div class="surcharges-value">€ <span>{{fee}}</span></div>
+                            <div class="surcharges-value">{{flight1.price_currency}} <span>{{fee}}</span></div>
                             <input type="hidden" id="fee" value="{{fee}}">
                         </div>
                         <hr>
                         <div class="total-fare">
                             <div class="total-fare-label">Total Fare: </div>
                             <div class="total-fare-value">
-                                {% if seat == 'First' %}
-                                    € <span>
-                                        {% if flight2 %}
-                                            {{flight1.first_fare | add:flight2.first_fare | add:fee}}
-                                        {% else %}
-                                            {{flight1.first_fare | add:fee}}
-                                        {% endif %}
-                                    </span>
-                                {% elif seat == 'Business' %}
-                                    € <span>
-                                        {% if flight2 %}
-                                            {{flight1.business_fare | add:flight2.business_fare | add:fee}}
-                                        {% else %}
-                                            {{flight1.business_fare | add:fee}}
-                                        {% endif %}
-                                    </span>
-                                {% elif seat == 'Economy' %}
-                                    € <span>
-                                        {% if flight2 %}
-                                            {{flight1.economy_fare | add:flight2.economy_fare | add:fee}}
-                                        {% else %}
-                                            {{flight1.economy_fare | add:fee}}
-                                        {% endif %}
-                                        </span>
-                                {% endif %}
+                                
+                                    {{flight1.price_currency}} <span>
+                                    {% if flight2 %}
+                                        {{flight1.price_grand_total | add:flight2.price_grand_total | add:fee}}
+                                    {% else %}
+                                        {{flight1.price_grand_total | add:fee}}
+                                    {% endif %}
+                                </span>
                             </div>
                         </div>
                     </div>

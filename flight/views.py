@@ -9,7 +9,7 @@ import math
 from .models import *
 from capstone.utils import render_to_pdf, createticket
 
-from flight.src.search.main_search import request_flight
+from flight.src.search.main_search import request_flight,request_flight_2
 from flight.src.book.main_book import main_book
 
 
@@ -133,6 +133,8 @@ def query(request, q):
 
 @csrf_exempt
 def flight(request):
+    if request.GET.get('test')=='1':
+        request_flight_2(request)
     return request_flight(request)
 
 def review(request):
@@ -181,9 +183,30 @@ def review(request):
         })
     else:
         return HttpResponseRedirect(reverse("login"))
-def book(reauest):
-    return main_book(reauest)
 
+def book(request):
+    return main_book(request)
+
+def populate_airoprts_db(request):
+    import pandas as pd
+    Place.objects.all().delete()
+    tmp_data=pd.read_csv('data/ok_airports.csv')
+    places = []
+    for row in range(len(tmp_data)):
+        if len(str(tmp_data.iloc[row]['municipality']))>3:
+            places.append(
+                Place(
+                    city = tmp_data.iloc[row]['municipality'], 
+                    airport = tmp_data.iloc[row]['name'],
+                    code = tmp_data.iloc[row]['iata_code'],
+                    country = tmp_data.iloc[row]['iso_country']
+                )
+            )
+        else:
+            print(tmp_data.iloc[row]['name'])
+    Place.objects.bulk_create(places)
+    print("ok")
+    return HttpResponse("Pop")
 
 def payment(request):
     if request.user.is_authenticated:
