@@ -390,11 +390,9 @@
                                             <div class="flight-details">
                                                 <div class="flight-price">
                                                     <h5>
-                                                        {{flight.currency}} {{flight.price_grand_total}}
+                                                        {{flight.currency}}
                                                         <span>
-                                                            {% if seat == 'Economy' %}{{flight.economy_fare}}{% endif %}
-                                                            {% if seat == 'Business' %}{{flight.business_fare}}{% endif %}
-                                                            {% if seat == 'First' %}{{flight.first_fare}}{% endif %}
+                                                            {{flight.price_grand_total}}
                                                         </span>
                                                     </h5>
                                                 </div>
@@ -676,11 +674,9 @@
                                                 <div class="flight-details">
                                                     <div class="flight-price">
                                                         <h5>
-                                                            € 
+                                                            {{flight.currency}}
                                                             <span>
-                                                                {% if seat == 'Economy' %}{{flight2.economy_fare}}{% endif %}
-                                                                {% if seat == 'Business' %}{{flight2.business_fare}}{% endif %}
-                                                                {% if seat == 'First' %}{{flight2.first_fare}}{% endif %}
+                                                                {{flight.price_grand_total}}
                                                             </span>
                                                         </h5>
                                                     </div>
