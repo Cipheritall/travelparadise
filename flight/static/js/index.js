@@ -71,7 +71,7 @@ function flight_to(event, focus=false) {
                 div.classList.add('places__list');
                 div.setAttribute('onclick', "selectplace(this)");
                 div.setAttribute('data-value', element.code);
-                div.innerText = `${element.city} (${element.country})`;
+                div.innerText = `${element.code} - ${element.city}/${element.country} (${element.airport})`;
                 list.append(div);
             });
         });
@@ -96,7 +96,7 @@ function flight_from(event, focus=false) {
                 div.classList.add('places__list');
                 div.setAttribute('onclick', "selectplace(this)");
                 div.setAttribute('data-value', element.code);
-                div.innerText = `${element.city} (${element.country})`;
+                div.innerText = `${element.code} - ${element.city}/${element.country} (${element.airport})`;
                 list.append(div);
             });
         });

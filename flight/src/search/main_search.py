@@ -40,9 +40,10 @@ def amadeus_flight_offer_search(o_place,d_place,flight_date,adults,req_type,link
             adults=adults)
         json_flight_offers_search = json.loads(flight_offers_search_response.body)
         print(json_flight_offers_search)
+        return json_flight_offers_search
     except amadeus.ResponseError as error:
         print(error)
-    return json_flight_offers_search
+        return -1
 
 def get_flights(o_place,d_place,flight_date,adults,req_type):
     link = f"https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode={o_place}&destinationLocationCode={d_place}&departureDate={flight_date}&adults={adults}_{req_type}"
@@ -125,7 +126,7 @@ def get_flights(o_place,d_place,flight_date,adults,req_type):
     return flights
     
 
-def request_flight_2(request):
+def request_flight(request):
     o_place = request.GET.get('Origin')
     d_place = request.GET.get('Destination')
     trip_type = request.GET.get('TripType')
@@ -198,7 +199,7 @@ def request_flight_2(request):
         })
 
 
-def request_flight(request):
+def request_flight_2(request):
     o_place = request.GET.get('Origin')
     d_place = request.GET.get('Destination')
     trip_type = request.GET.get('TripType')
