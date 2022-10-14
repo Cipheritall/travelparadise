@@ -390,7 +390,7 @@
                                             <div class="flight-details">
                                                 <div class="flight-price">
                                                     <h5>
-                                                        € 
+                                                        {{flight.currency}} {{flight.price_grand_total}}
                                                         <span>
                                                             {% if seat == 'Economy' %}{{flight.economy_fare}}{% endif %}
                                                             {% if seat == 'Business' %}{{flight.business_fare}}{% endif %}

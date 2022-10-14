@@ -46,7 +46,7 @@ class Segment(models.Model):
         return f"{self.id}: {self.departure} to {self.arrival}"
     
 class Flight(models.Model):
-    #id = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True)
     link = models.CharField(max_length=255,default=None)
     origin = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="departures",default=None)
     destination = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="arrivals",default=None)

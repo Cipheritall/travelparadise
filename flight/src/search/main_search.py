@@ -25,6 +25,12 @@ def get_next_segment_id():
     else:
         return Segment.objects.order_by('-id').first().id + 1
 
+def get_next_flight_id():
+    if Flight.objects.order_by('-id').first() == None:
+        return 1
+    else:
+        return Flight.objects.order_by('-id').first().id + 1
+    
 def request_flight_2(request):
     o_place = request.GET.get('Origin')
     d_place = request.GET.get('Destination')
@@ -39,15 +45,8 @@ def request_flight_2(request):
         origin2 = Place.objects.get(code=d_place.upper())   ##
         destination2 = Place.objects.get(code=o_place.upper())  ##
     seat = request.GET.get('SeatClass')
-
-    # flightday = Week.objects.get(number=depart_date.weekday())
-    # destination = Place.objects.get(code=d_place.upper())
-    # origin = Place.objects.get(code=o_place.upper())
     
     link = f"https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode={o_place}&destinationLocationCode={d_place}&departureDate={departdate}&adults={adults}"
-    
-    filtred_flights =  Flight.objects.filter(link=link)
-    #if len(filtred_flights)==0:
     try:
         flight_offers_search_response = amaclient.shopping.flight_offers_search.get(
             originLocationCode=o_place,
@@ -60,9 +59,11 @@ def request_flight_2(request):
             print(error)
     flights = []
         
-
     for raw_flight in json_flight_offers_search['data']:
+        
+        flight_id = get_next_flight_id()
         loc_segments = []
+        id_segments = []
         for seg in raw_flight['itineraries'][0]['segments']:
             current_id=get_next_segment_id()
             operating_cxr = ""
@@ -71,7 +72,14 @@ def request_flight_2(request):
             try:
                 operating_cxr = seg['operating']['carrierCode']
             except:
+                operating_cxr = seg['carrierCode']
                 pass
+            
+            plane_str = seg['aircraft']['code'].replace(' ','')
+            plane = json_flight_offers_search['dictionaries']['aircraft'][plane_str]
+            cxr_str = seg['carrierCode'].replace(' ','')
+            cxr = json_flight_offers_search['dictionaries']['carriers'][cxr_str]
+            op_cxr = json_flight_offers_search['dictionaries']['carriers'][operating_cxr]
             segment = Segment(
                 link =link,
                 id = current_id,
@@ -81,25 +89,26 @@ def request_flight_2(request):
                 departure_date =raw_dep[:raw_dep.find('T')],
                 departure_time = raw_dep[raw_dep.find('T')+1:],
                 arrival_time = raw_arr[raw_arr.find('T')+1:],
-                mk_carrier_code = seg['carrierCode'],
-                op_carrier_code = operating_cxr,
+                mk_carrier_code = cxr,
+                op_carrier_code = op_cxr,
                 numberOfStops = seg['numberOfStops'],
                 duration = seg['duration'],
-                aircraft = seg['aircraft']
+                aircraft =plane
             )
             loc_segments.append(segment)
+            id_segments.append(segment.id)
             for seg in loc_segments:
                 seg.save()
                 #Segment.objects.add(seg) 
         
-        duration = pd.Timedelta("PT1S")
         dep_str = f"""{getattr(loc_segments[0], 'departure_date')}T{getattr(loc_segments[0], 'departure_time')} """
         arr_str = f"""{getattr(loc_segments[-1], 'arrival_date')}T{getattr(loc_segments[-1], 'arrival_time')} """
         dep_ts = datetime.strptime(dep_str.replace(' ',''), "%Y-%m-%dT%H:%M:%S")
         arr_ts = datetime.strptime(arr_str.replace(' ',''), "%Y-%m-%dT%H:%M:%S")
         duration = pd.Timedelta(arr_ts-dep_ts)
-    
+
         flight = Flight(
+            id = flight_id,
             link=link,
             origin = getattr(loc_segments[0], 'departure'),
             destination = getattr(loc_segments[-1], 'arrival'),
@@ -115,15 +124,24 @@ def request_flight_2(request):
             fare_type =raw_flight['pricingOptions']['fareType'][0], 
             duration =duration
         )
+        
         flight.save()
-        seg_index = 1
-        flight.segments.add(*loc_segments)
-        # for ss in loc_segments:
-        #     seg_index+=1
-        #flights.append(flight)
-        flight.save()
+        for seg_id in id_segments:
+            flight.segments.add(seg_id)
+        flights.append(flight)
         
     #Flight.objects.bulk_create(flights)
+    return render(request, "flight/search2.html", {
+        'flights': flights,
+        'origin': o_place,
+        'destination': d_place,
+        'seat': seat.capitalize(),
+        'trip_type': trip_type,
+        'depart_date': depart_date,
+        'return_date': return_date,
+        'max_price': math.ceil(10000/100)*100,
+        'min_price': math.floor(100/100)*100
+    })
 
 
 def request_flight(request):
