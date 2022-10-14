@@ -1,1 +1,1 @@
-web: gunicorn capstone.wsgi  --timeout 15 --keep-alive 5 --log-level debug
+web: gunicorn capstone.wsgi  --timeout 60 --keep-alive 5 --log-level debug
