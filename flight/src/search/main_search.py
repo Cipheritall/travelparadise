@@ -31,36 +31,29 @@ def get_next_flight_id():
     else:
         return Flight.objects.order_by('-id').first().id + 1
     
-def request_flight_2(request):
-    o_place = request.GET.get('Origin')
-    d_place = request.GET.get('Destination')
-    trip_type = request.GET.get('TripType')
-    departdate = request.GET.get('DepartDate')
-    adults = request.GET.get('countadults')
-    depart_date = datetime.strptime(departdate, "%Y-%m-%d")
-    return_date = None
-    if trip_type == '2':
-        returndate = request.GET.get('ReturnDate')
-        return_date = datetime.strptime(returndate, "%Y-%m-%d")
-        origin2 = Place.objects.get(code=d_place.upper())   ##
-        destination2 = Place.objects.get(code=o_place.upper())  ##
-    seat = request.GET.get('SeatClass')
-    
-    link = f"https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode={o_place}&destinationLocationCode={d_place}&departureDate={departdate}&adults={adults}"
+def amadeus_flight_offer_search(o_place,d_place,flight_date,adults,req_type,link):  
     try:
         flight_offers_search_response = amaclient.shopping.flight_offers_search.get(
             originLocationCode=o_place,
             destinationLocationCode=d_place,
-            departureDate=departdate,
+            departureDate=flight_date,
             adults=adults)
         json_flight_offers_search = json.loads(flight_offers_search_response.body)
         print(json_flight_offers_search)
     except amadeus.ResponseError as error:
-            print(error)
+        print(error)
+    return json_flight_offers_search
+
+def get_flights(o_place,d_place,flight_date,adults,req_type):
+    link = f"https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode={o_place}&destinationLocationCode={d_place}&departureDate={flight_date}&adults={adults}_{req_type}"
+    print(link)
+    
+    json_flight_offers_search = amadeus_flight_offer_search(o_place,d_place,flight_date,adults,req_type,link)
+    if json_flight_offers_search == -1:
+        return -1
     flights = []
-        
+    
     for raw_flight in json_flight_offers_search['data']:
-        
         flight_id = get_next_flight_id()
         loc_segments = []
         id_segments = []
@@ -129,19 +122,80 @@ def request_flight_2(request):
         for seg_id in id_segments:
             flight.segments.add(seg_id)
         flights.append(flight)
+    return flights
+    
+
+def request_flight_2(request):
+    o_place = request.GET.get('Origin')
+    d_place = request.GET.get('Destination')
+    trip_type = request.GET.get('TripType')
+    departdate = request.GET.get('DepartDate')
+    adults = request.GET.get('countadults')
+    depart_date = datetime.strptime(departdate, "%Y-%m-%d")
+    seat = request.GET.get('SeatClass')
+
+    origin = Place.objects.get(code=o_place.upper())   ##
+    destination = Place.objects.get(code=d_place.upper())  #
+    
+    return_date = None
+    if trip_type == '2':
+        returndate = request.GET.get('ReturnDate')
+        return_date = datetime.strptime(returndate, "%Y-%m-%d")
+        origin2 = Place.objects.get(code=d_place.upper())   ##
+        destination2 = Place.objects.get(code=o_place.upper())  ##
+        link_2 = f"https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode={d_place}&destinationLocationCode={o_place}&departureDate={returndate}&adults={adults}_2"
+        flights2 = get_flights(d_place,o_place,returndate,adults,2)
         
-    #Flight.objects.bulk_create(flights)
-    return render(request, "flight/search2.html", {
-        'flights': flights,
-        'origin': o_place,
-        'destination': d_place,
-        'seat': seat.capitalize(),
-        'trip_type': trip_type,
-        'depart_date': depart_date,
-        'return_date': return_date,
-        'max_price': math.ceil(10000/100)*100,
-        'min_price': math.floor(100/100)*100
-    })
+    link_1 = f"https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode={o_place}&destinationLocationCode={d_place}&departureDate={departdate}&adults={adults}_1"
+    
+    
+    flights = get_flights(o_place,d_place,departdate,adults,1)
+    
+    if trip_type == '2':
+        return render(request, "flight/search.html", {
+            'flights': Flight.objects.filter(link=link_1),
+            'origin': origin,
+            'destination': destination,
+            'flights2': Flight.objects.filter(link=link_2),   ##
+            'origin2': origin2,    ##
+            'trip_type': trip_type,
+            'destination2': destination2,    ##
+            'seat': seat.capitalize(),
+            'depart_date': depart_date,
+            'return_date': return_date,
+            # 'max_price': Flight.objects.filter(link=link+"_1").order_by('-price_grand_total').first().price_grand_total,
+            # 'min_price': Flight.objects.filter(link=link+"_1").order_by('price_grand_total').first().price_grand_total,
+            # 'max_price2':Flight.objects.filter(link=link+"_2").order_by('-price_grand_total').first().price_grand_total,    
+            # 'min_price2': Flight.objects.filter(link=link+"_2").order_by('price_grand_total').first().price_grand_total    ##
+        })
+        return render(request, "flight/search.html", {
+            'flights': flights,
+            'origin': origin,
+            'destination': destination,
+            'flights2': flights2,   ##
+            'origin2': origin2,    ##
+            'destination2': destination2,    ##
+            'seat': seat.capitalize(),
+            'trip_type': trip_type,
+            'depart_date': depart_date,
+            'return_date': return_date,
+            'max_price': math.ceil(max_price/100)*100,
+            'min_price': math.floor(min_price/100)*100,
+            'max_price2': math.ceil(max_price2/100)*100,    ##
+            'min_price2': math.floor(min_price2/100)*100    ##
+        })
+    else:
+        return render(request, "flight/search2.html", {
+            'flights': flights,
+            'origin': origin,
+            'destination': destination,
+            'seat': seat.capitalize(),
+            'trip_type': trip_type,
+            'depart_date': depart_date,
+            'return_date': return_date,
+            'max_price': math.ceil(10000/100)*100,
+            'min_price': math.floor(100/100)*100
+        })
 
 
 def request_flight(request):

@@ -133,9 +133,9 @@ def query(request, q):
 
 @csrf_exempt
 def flight(request):
-    if request.GET.get('test')=='1':
-        request_flight_2(request)
-    return request_flight(request)
+    # if request.GET.get('test')=='1':
+    #     request_flight_2(request)
+    return request_flight_2(request)
 
 def review(request):
     flight_1 = request.GET.get('flight1Id')
